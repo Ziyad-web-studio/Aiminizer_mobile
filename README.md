@@ -1,20 +1,27 @@
 # Aiminizer Mobile
 
-Sebuah antarmuka obrolan kecerdasan buatan dengan desain minimalis dan efek kaca. Proyek ini dikembangkan oleh ziyad_studio dengan fokus pada estetika dan fungsionalitas yang efisien.
+Antarmuka obrolan AI minimalis dengan estetika tinggi. Dikembangkan oleh **ziyad_studio** dengan filosofi *Designing Silence*.
 
-## Fitur Utama
+## ⚡ Unduh Cepat
 
-* **Desain Premium:** Menggunakan efek kaca dan mode gelap untuk tampilan antarmuka yang modern.
-* **Optimalisasi Seluler:** Tata letak responsif yang dirancang khusus untuk kenyamanan penggunaan di perangkat seluler.
-* **Penyimpanan Lokal:** Konfigurasi sistem dan Kunci API disimpan secara aman di dalam peramban menggunakan `localStorage`.
-* **Dukungan Multi-Model:** Sistem dirancang untuk siap menerima berbagai model kecerdasan buatan.
+Dapatkan file aplikasi langsung untuk dijalankan di perangkat Anda:
 
-## Panduan Modifikasi API
+[![Download HTML](https://img.shields.io/badge/Download-Aiminizer_HTML-FF5F1F?style=for-the-badge&logo=html5&logoColor=white)](https://raw.githubusercontent.com/Ziyad-web-studio/Aiminizer_mobile/refs/heads/main/index.html)
 
-Sistem saat ini menggunakan format API standar. Jika Anda ingin mengubah penyedia API tanpa merusak desain visual yang sudah ada, salin dan gunakan prompt di bawah ini pada asisten AI Anda.
+---
 
-### Prompt Modifikasi
+## 💎 Fitur Utama
 
+* **Apple-Style UI:** Menggunakan efek kaca dan palet warna gelap yang elegan.
+* **Mobile First:** Dioptimalkan sepenuhnya untuk penggunaan satu tangan di perangkat seluler.
+* **Zero Backend:** Berjalan sepenuhnya di sisi klien menggunakan `localStorage` untuk keamanan data.
+* **Dynamic AI Support:** Siap dikonfigurasi untuk berbagai provider API.
+
+## 🛠 Panduan Modifikasi API (via AI)
+
+Gunakan prompt berikut jika Anda ingin meminta asisten AI mengubah penyedia API tanpa merusak desain:
+
+### Prompt Eksekusi
 ```text
 Tolong modifikasi logika API pada kode HTML ini. Ubah integrasi dari sistem saat ini menjadi integrasi untuk [masukkan provider api key].
 
