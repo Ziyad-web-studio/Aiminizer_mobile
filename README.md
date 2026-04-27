@@ -6,7 +6,12 @@ Antarmuka obrolan AI minimalis dengan estetika tinggi. Dikembangkan oleh **ziyad
 
 Dapatkan file aplikasi langsung untuk dijalankan di perangkat Anda:
 
-[![Download HTML](https://img.shields.io/badge/Download-Aiminizer_HTML-FF5F1F?style=for-the-badge&logo=html5&logoColor=white)](https://raw.githubusercontent.com/Ziyad-web-studio/Aiminizer_mobile/refs/heads/main/index.html)
+[![Lihat & Unduh HTML](https://img.shields.io/badge/Buka_File-Aiminizer_HTML-FF5F1F?style=for-the-badge&logo=html5&logoColor=white)](https://raw.githubusercontent.com/Ziyad-web-studio/Aiminizer_mobile/refs/heads/main/index.html)
+
+**Cara menyimpan:**
+1. Klik tombol di atas.
+2. Setelah halaman kode terbuka, tekan **Ctrl + S** (Windows) atau **Cmd + S** (Mac).
+3. Jika menggunakan ponsel, buka menu peramban lalu pilih **Bagikan > Simpan ke File** atau **Unduh Halaman**.
 
 ---
 
@@ -22,6 +27,7 @@ Dapatkan file aplikasi langsung untuk dijalankan di perangkat Anda:
 Gunakan prompt berikut jika Anda ingin meminta asisten AI mengubah penyedia API tanpa merusak desain:
 
 ### Prompt Eksekusi
+
 ```text
 Tolong modifikasi logika API pada kode HTML ini. Ubah integrasi dari sistem saat ini menjadi integrasi untuk [masukkan provider api key].
 
