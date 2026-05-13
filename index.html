@@ -297,8 +297,8 @@
             <div class="config-item">
                 <label>Tema Antarmuka</label>
                 <div class="theme-btns">
-                    <button class="theme-btn active" id="btnCyber" onclick="setTheme('cyber')">Cyber</button>
-                    <button class="theme-btn" id="btnOrganic" onclick="setTheme('organic')">Organic</button>
+                    <button class="theme-btn" id="btnCyber" onclick="setTheme('cyber')">Cyber</button>
+                    <button class="theme-btn active" id="btnOrganic" onclick="setTheme('organic')">Organic</button>
                 </div>
             </div>
             <div class="config-item">
@@ -421,7 +421,7 @@
         }
         localStorage.setItem('aiminizer_theme', t);
     };
-    setTheme(localStorage.getItem('aiminizer_theme') || 'cyber');
+    setTheme(localStorage.getItem('aiminizer_theme') || 'organic');
 
     window.toggleSidebar = () => {
         ui.sidebar.classList.toggle('active');
