@@ -1,243 +1,895 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Aiminizer | Mobile</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Ziyad Studio | Aiminizer Pro</title>
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="asset/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="asset/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="asset/favicon-16x16.png">
+    <link rel="manifest" href="asset/site.webmanifest">
+    <link rel="shortcut icon" href="asset/favicon.ico">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- KaTeX untuk render LaTeX/math -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
     <style>
+        /* TEMA CYBER TECHNIC (Default) */
         :root {
-            --bg: #ffffff;
-            --text: #1a1a1a;
-            --glass: rgba(255, 255, 255, 0.8);
-            --border: rgba(0, 0, 0, 0.1);
-            --accent: #FF5F1F;
-            --ai-msg: #f3f4f6;
+            --bg: #161823;
+            --surface: rgba(117, 135, 138, 0.15);
+            --glass: rgba(22, 24, 35, 0.85);
+            --border: rgba(68, 206, 246, 0.2);
+            --text: #ffffff;
+            --text-dim: #75878A;
+            --accent: #44CEF6;
+            --user-bubble-bg: #0C518A;
+            --user-bubble-text: #ffffff;
+            --code-bg: rgba(0, 0, 0, 0.4);
+            --send-bg: #ffffff;
+            --send-icon: #161823;
         }
 
-        .dark {
-            --bg: #000000;
-            --text: #f5f5f7;
-            --glass: rgba(20, 20, 20, 0.8);
-            --border: rgba(255, 255, 255, 0.15);
-            --ai-msg: #1c1c1e;
+        /* TEMA ORGANIC REFRESH */
+        [data-theme="organic"] {
+            --bg: #FFF9EB;
+            --surface: rgba(197, 227, 132, 0.3);
+            --glass: rgba(255, 249, 235, 0.9);
+            --border: rgba(32, 15, 7, 0.15);
+            --text: #200F07;
+            --text-dim: rgba(32, 15, 7, 0.6);
+            --accent: #C5E384;
+            --user-bubble-bg: #C5E384;
+            --user-bubble-text: #200F07;
+            --code-bg: rgba(32, 15, 7, 0.05);
+            --send-bg: #C5E384;
+            --send-icon: #200F07;
         }
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, system-ui, sans-serif;
-            overflow: hidden;
-            touch-action: manipulation;
-        }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            z-index: -1;
-            animation: pulse 8s infinite alternate;
-            opacity: 0.3;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.3) translate(5%, 5%); }
-        }
-
-        .glass {
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--border);
-        }
-
-        .hide-scroll::-webkit-scrollbar { display: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* Mobile safe areas */
-        .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
-        .safe-pt { padding-top: env(safe-area-inset-top); }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; height: 100dvh; overflow: hidden; transition: background-color 0.4s; }
+        .layout { display: flex; height: 100%; position: relative; }
+        .mono { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase; }
 
-        pre {
-            background: #1e1e1e;
-            padding: 12px;
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); z-index: 990;
+            opacity: 0; visibility: hidden; transition: 0.3s ease;
+        }
+        .overlay.active { opacity: 1; visibility: visible; }
+
+        .sidebar {
+            width: 280px; background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border-right: 1px solid var(--border); display: flex; flex-direction: column;
+            position: absolute; height: 100%; z-index: 1000; transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .sidebar.active { transform: translateX(0); }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .close-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
+        .close-btn:hover { color: var(--text); }
+        
+        .config-area { padding: 20px; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; }
+        .config-item { display: flex; flex-direction: column; gap: 8px; }
+        .config-item label { font-size: 0.7rem; color: var(--text-dim); font-weight: 600; }
+        
+        select, input { 
+            background: var(--surface); border: 1px solid var(--border); color: var(--text); 
+            padding: 12px; border-radius: 12px; font-family: 'Inter'; font-size: 0.9rem; outline: none; transition: 0.3s;
+        }
+        select:focus, input:focus { border-color: var(--accent); }
+
+        .theme-btns { display: flex; gap: 8px; }
+        .theme-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
+        .theme-btn.active { border-color: var(--accent); background: var(--accent); color: var(--bg); font-weight: 600; }
+
+        .main { flex: 1; display: flex; flex-direction: column; position: relative; width: 100%; height: 100%; }
+        
+        .topbar {
+            padding: 16px 20px; background: transparent; display: flex; justify-content: space-between; align-items: center;
+            position: absolute; width: 100%; top: 0; z-index: 10; pointer-events: none;
+        }
+        
+        .menu-btn { 
+            pointer-events: auto; background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border); color: var(--text); font-size: 1.2rem; cursor: pointer; width: 42px; height: 42px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: 0.2s;
+        }
+        .menu-btn:hover { border-color: var(--text-dim); }
+        
+        .model-selector {
+            pointer-events: auto; background: var(--glass); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            padding: 8px 14px; border-radius: 30px; display: flex; align-items: center; gap: 8px; cursor: pointer;
+            transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 60vw;
+        }
+        .model-selector:hover { border-color: var(--text-dim); }
+        .status-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; transition: 0.3s; flex-shrink: 0; }
+        
+        #currentModelLabel { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+        
+        .dropdown {
+            pointer-events: auto; position: absolute; top: 65px; left: 50%; transform: translateX(-50%); background: var(--glass);
+            backdrop-filter: blur(30px); border: 1px solid var(--border); border-radius: 16px; padding: 8px;
+            display: none; flex-direction: column; gap: 4px; z-index: 50; width: 260px; max-height: 300px; overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .dropdown.active { display: flex; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        
+        .drop-item { padding: 12px; border-radius: 10px; cursor: pointer; color: var(--text-dim); transition: 0.2s; display: flex; flex-direction: column; }
+        .drop-item:hover, .drop-item.active { background: var(--surface); color: var(--text); }
+        .drop-item strong { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+
+        .chat-container { flex: 1; padding: 90px 20px 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; scroll-behavior: smooth; min-height: 0; }
+        .message { max-width: 800px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .message.user { align-items: flex-end; }
+        .message.assistant { align-items: flex-start; }
+        
+        .bubble { font-size: 1rem; line-height: 1.6; word-wrap: break-word; overflow-wrap: break-word; cursor: pointer; transition: opacity 0.2s; }
+        .bubble:active { opacity: 0.6; }
+        
+        .message.user .bubble { max-width: 85%; background: var(--user-bubble-bg); color: var(--user-bubble-text); padding: 10px 18px; border-radius: 24px; border: none; }
+        .message.assistant .bubble { max-width: 100%; background: transparent; padding: 0; width: 100%; color: var(--text); }
+        
+        .timestamp { font-size: 0.65rem; color: var(--text-dim); margin-top: 6px; padding: 0 6px; transition: color 0.3s; }
+        .message.user .timestamp { text-align: right; }
+        .message.assistant .timestamp { text-align: left; }
+
+        .markdown-body { width: 100%; color: var(--text); font-size: 0.95rem; line-height: 1.7; overflow-wrap: break-word; }
+        .markdown-body p { margin-bottom: 1em; }
+        .markdown-body p:last-child { margin-bottom: 0; }
+        .markdown-body ul, .markdown-body ol { padding-left: 1.8rem; margin-bottom: 1.2em; }
+        .markdown-body li { margin-bottom: 0.4em; }
+        .markdown-body li > p { margin-top: 0.4em; margin-bottom: 0.4em; }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 { margin-top: 1.5em; margin-bottom: 0.8em; font-weight: 600; color: var(--text); line-height: 1.3; }
+        .markdown-body h1 { font-size: 1.5rem; }
+        .markdown-body h2 { font-size: 1.3rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3em; }
+        .markdown-body h3 { font-size: 1.1rem; }
+        .markdown-body pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px; margin: 16px 0; overflow: hidden; }
+        .markdown-body pre code { display: block; padding: 16px; overflow-x: auto; font-family: 'Space Mono', monospace; font-size: 0.85rem; line-height: 1.5; }
+        .markdown-body code:not(pre code) { background: var(--surface); padding: 3px 6px; border-radius: 6px; font-family: 'Space Mono', monospace; color: var(--accent); font-size: 0.85em; }
+        .markdown-body blockquote { border-left: 4px solid var(--accent); padding-left: 1em; margin-left: 0; color: var(--text-dim); }
+        
+        .markdown-body table { display: block; width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-collapse: collapse; margin-bottom: 1.5em; white-space: normal; }
+        .markdown-body th, .markdown-body td { border: 1px solid var(--border); padding: 10px 14px; text-align: left; font-size: 0.9rem; min-width: 120px; word-wrap: break-word; }
+        .markdown-body th { background: var(--surface); font-weight: 600; }
+        .markdown-body tr:nth-child(2n) { background-color: rgba(0, 0, 0, 0.02); }
+
+        .input-wrapper { position: absolute; bottom: 20px; left: 0; right: 0; margin: 0 auto; width: 100%; max-width: 800px; padding: 0 20px; display: flex; flex-direction: column; align-items: center; z-index: 50; pointer-events: none; }
+        
+        .file-chip { pointer-events: auto; display: none; align-items: center; gap: 10px; background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; margin-bottom: 12px; width: fit-content; max-width: 100%; box-shadow: 0 4px 15px rgba(0,0,0,0.1); animation: fadeIn 0.2s; }
+        .file-chip span { font-size: 0.85rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px; }
+        .file-chip .remove-btn { cursor: pointer; color: var(--text-dim); transition: 0.2s; }
+        .file-chip .remove-btn:hover { color: #ff4444; }
+
+        .input-box { pointer-events: auto; width: 100%; background: var(--glass); backdrop-filter: blur(24px); border: 1px solid var(--border); border-radius: 28px; padding: 6px 10px; display: flex; align-items: flex-end; gap: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: border-color 0.3s; }
+        .input-box:focus-within { border-color: var(--text-dim); }
+        
+        .attach-btn { background: none; border: none; color: var(--text-dim); cursor: pointer; padding: 10px; font-size: 1.4rem; transition: 0.2s; margin-bottom: 2px; flex-shrink: 0; }
+        .attach-btn:hover { color: var(--text); }
+        
+        textarea { flex: 1; background: transparent; border: none; color: var(--text); font-family: 'Inter', sans-serif; font-size: 1rem; padding: 12px 0; resize: none; outline: none; max-height: 150px; min-height: 24px; line-height: 1.5; }
+        
+        .send-btn { background: var(--send-bg); color: var(--send-icon); border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 3px; transition: transform 0.2s, background 0.3s; flex-shrink: 0; position: relative; overflow: hidden; }
+        .send-btn:disabled { opacity: 1; cursor: not-allowed; }
+        .send-btn:hover:not(:disabled) { transform: scale(1.05); }
+
+        /* Animasi send button saat loading: ripple berputar */
+        .send-btn.loading { background: var(--accent) !important; color: var(--bg) !important; animation: sendPulse 1.5s ease-in-out infinite; }
+        @keyframes sendPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(68, 206, 246, 0.5); transform: scale(1); }
+            50% { box-shadow: 0 0 0 8px rgba(68, 206, 246, 0); transform: scale(0.95); }
+        }
+        [data-theme="organic"] .send-btn.loading { animation: sendPulseOrganic 1.5s ease-in-out infinite; }
+        @keyframes sendPulseOrganic {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(197, 227, 132, 0.6); transform: scale(1); }
+            50% { box-shadow: 0 0 0 8px rgba(197, 227, 132, 0); transform: scale(0.95); }
+        }
+
+        /* Typing dots animasi */
+        .typing-indicator { display: flex; align-items: center; gap: 5px; padding: 4px 0; }
+        .typing-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: 0.4; animation: typingBounce 1.2s ease-in-out infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        /* SCROLL TO BOTTOM BUTTON */
+        .scroll-down-btn {
+            background: var(--glass); backdrop-filter: blur(16px);
+            border: 1px solid var(--border); color: var(--text);
+            padding: 8px 16px; border-radius: 20px; cursor: pointer;
+            font-size: 0.8rem; display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2); z-index: 40;
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+            white-space: nowrap; margin-bottom: 10px;
+        }
+        .scroll-down-btn.visible {
+            opacity: 1; visibility: visible; pointer-events: auto;
+            animation: floatUp 0.25s ease forwards;
+        }
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .scroll-down-btn i { font-size: 0.75rem; color: var(--accent); }
+
+        /* THINKING BLOCK */
+        .thinking-block {
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
             border-radius: 12px;
-            font-size: 13px;
-            overflow-x: auto;
-            margin: 8px 0;
+            overflow: hidden;
+            background: var(--surface);
+        }
+        .thinking-toggle {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 14px; cursor: pointer;
+            color: var(--text-dim); font-size: 0.78rem; font-weight: 600;
+            letter-spacing: 0.4px; text-transform: uppercase;
+            user-select: none; transition: color 0.2s;
+            background: none; border: none; width: 100%; text-align: left;
+        }
+        .thinking-toggle:hover { color: var(--text); }
+        .thinking-toggle .think-icon { color: var(--accent); font-size: 0.85rem; }
+        .thinking-toggle .think-chevron { margin-left: auto; font-size: 0.65rem; transition: transform 0.3s ease; }
+        .thinking-toggle.open .think-chevron { transform: rotate(180deg); }
+        .thinking-content {
+            display: none;
+            padding: 12px 16px;
+            font-size: 0.82rem;
+            line-height: 1.65;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border);
+            white-space: pre-wrap;
+            font-family: 'Space Mono', monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .thinking-content.open { display: block; animation: fadeIn 0.2s ease; }
+        .think-spinner { display: inline-block; animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* Typewriter cursor */
+        .tw-cursor {
+            display: inline-block;
+            color: var(--accent);
+            animation: cursorBlink 0.7s step-end infinite;
+            font-weight: 300;
+            margin-left: 1px;
+        }
+        @keyframes cursorBlink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
         }
     </style>
 </head>
-<body class="h-screen w-full flex flex-col">
+<body>
 
-    <div class="orb w-48 h-48 bg-orange-600 top-[-10%] left-[-10%]"></div>
-    <div class="orb w-64 h-64 bg-zinc-800 bottom-[-10%] right-[-10%]"></div>
+<div class="layout">
+    <div class="overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <header class="fixed top-2 left-1/2 -translate-x-1/2 w-[92%] h-14 glass rounded-2xl z-50 flex items-center justify-between px-4 shadow-lg">
-        <button onclick="toggleSettings()" class="p-2 active:opacity-50">
-            <i data-lucide="menu" class="w-5 h-5"></i>
-        </button>
-        <div class="text-center">
-            <h1 class="text-md font-bold leading-none">Aiminizer</h1>
-            <p class="text-[9px] opacity-40 uppercase tracking-tighter">ziyad_studio</p>
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <span class="mono">Config System</span>
+            <button class="close-btn" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
         </div>
-        <select id="modelSelect" class="bg-transparent text-xs font-semibold focus:outline-none border-none">
-            <option value="gpt-3.5-turbo">GPT-3.5</option>
-            <option value="deepseek-chat">DeepSeek</option>
-        </select>
-    </header>
+        
+        <div class="config-area">
+            <div class="config-item">
+                <label>Tema Antarmuka</label>
+                <div class="theme-btns">
+                    <button class="theme-btn active" id="btnCyber" onclick="setTheme('cyber')">Cyber</button>
+                    <button class="theme-btn" id="btnOrganic" onclick="setTheme('organic')">Organic</button>
+                </div>
+            </div>
+            <div class="config-item">
+                <label>Penyedia (Provider)</label>
+                <select id="providerSelect"><option disabled selected>Loading...</option></select>
+            </div>
+            <div class="config-item">
+                <label>Kunci API (Opsional)</label>
+                <input type="password" id="apiKeyInput" placeholder="Ketik jika ada...">
+            </div>
+        </div>
+    </div>
 
-    <main id="chatContainer" class="flex-1 w-full pt-20 pb-24 px-4 overflow-y-auto hide-scroll flex flex-col gap-4">
-        </main>
+    <div class="main">
+        <div class="topbar">
+            <button class="menu-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            
+            <div style="position:relative">
+                <div class="model-selector" id="modelSelector">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span class="mono" id="currentModelLabel">Memuat...</span>
+                    <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: var(--text-dim)"></i>
+                </div>
+                <div class="dropdown" id="modelDropdown"></div>
+            </div>
+            
+            <div style="width: 42px;"></div>
+        </div>
 
-    <div class="fixed bottom-0 w-full px-3 pb-4 safe-pb glass-none bg-gradient-to-t from-[var(--bg)] to-transparent">
-        <div class="glass rounded-[28px] p-1.5 flex items-end gap-2 shadow-xl">
-            <textarea id="userInput" rows="1" placeholder="Pesan..." 
-                class="flex-1 bg-transparent border-none focus:ring-0 resize-none py-3 px-4 text-[15px] max-h-32"
-                oninput="this.style.height='';this.style.height=this.scrollHeight+'px'"></textarea>
-            <button onclick="sendMessage()" class="bg-[var(--accent)] text-white w-11 h-11 rounded-full flex items-center justify-center active:scale-90 transition shadow-lg">
-                <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+        <div class="chat-container" id="chatContainer">
+            <div style="text-align: center; margin: auto; opacity: 0.6; transition: 0.3s;">
+                <img src="asset/android-chrome-192x192.png" alt="Logo aiminizer" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 16px;">
+                <p class="mono">Sistem Siap</p>
+            </div>
+        </div>
+
+        <div class="input-wrapper">
+            <button class="scroll-down-btn" id="scrollDownBtn" onclick="scrollToBottom(true)">
+                <i class="fas fa-arrow-down"></i> Lompat ke bawah
             </button>
-        </div>
-    </div>
-
-    <div id="settingsPanel" class="fixed inset-0 z-[60] invisible overflow-hidden">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="overlay" onclick="toggleSettings()"></div>
-        <div class="absolute left-0 top-0 h-full w-[85%] max-w-sm glass border-r border-white/10 p-6 flex flex-col gap-5 shadow-2xl transition-transform -translate-x-full" id="settingsContent">
-            <div class="flex justify-between items-center mb-2">
-                <h2 class="text-lg font-black">Panel Kontrol</h2>
-                <button onclick="toggleSettings()" class="opacity-50"><i data-lucide="x"></i></button>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="space-y-1">
-                    <label class="text-[10px] uppercase opacity-40 font-bold ml-1">Tampilan</label>
-                    <button onclick="toggleTheme()" class="w-full h-12 glass rounded-xl flex items-center justify-between px-4 active:bg-white/10">
-                        <span class="text-sm">Ganti Tema</span>
-                        <i data-lucide="moon" class="w-4 h-4"></i>
-                    </button>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-[10px] uppercase opacity-40 font-bold ml-1">API Key</label>
-                    <input type="password" id="apiKey" class="w-full h-12 glass rounded-xl px-4 text-sm focus:ring-1 ring-orange-500 outline-none" placeholder="Masukkan Key...">
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-[10px] uppercase opacity-40 font-bold ml-1">Sistem</label>
-                    <textarea id="systemPrompt" rows="3" class="w-full p-4 glass rounded-xl text-xs outline-none resize-none" placeholder="Instruksi AI..."></textarea>
-                </div>
+            <div class="file-chip" id="fileChip">
+                <i class="fas fa-file-code" style="color: var(--accent)"></i>
+                <span id="fileName">dokumen.txt</span>
+                <i class="fas fa-times-circle remove-btn" onclick="clearFile()"></i>
             </div>
 
-            <button onclick="saveSettings()" class="mt-auto h-14 bg-[var(--accent)] text-white rounded-2xl font-bold active:opacity-80">Simpan Konfigurasi</button>
+            <div class="input-box">
+                <input type="file" id="fileUpload" accept=".txt,.md,.py,.js,.html,.css,.json,.csv" style="display: none;">
+                <button class="attach-btn" onclick="document.getElementById('fileUpload').click()"><i class="fas fa-paperclip"></i></button>
+                
+                <textarea id="chatInput" rows="1" placeholder="Pesan Aiminizer..."></textarea>
+                <button class="send-btn" id="sendBtn"><i class="fas fa-arrow-up"></i></button>
+            </div>
         </div>
     </div>
+</div>
 
-    <script>
-        lucide.createIcons();
+<script src="https://g4f.dev/dist/js/framework.js"></script>
+<script type="module">
+    import { loadProviders, createClient } from "https://g4f.dev/dist/js/providers.js";
+    import { animate, scrambleText } from "https://esm.sh/animejs@4";
 
-        const ABSOLUTE_PROMPT = "Kamu adalah Aiminizer. Dibuat oleh Ziyad (ziyad_studio), seorang individu muda dengan ambisi ekstrem dan pemikiran strategis. Gunakan nada yang serius dan cerdas.";
+    const ui = {
+        chat: document.getElementById('chatContainer'),
+        input: document.getElementById('chatInput'),
+        send: document.getElementById('sendBtn'),
+        pS: document.getElementById('providerSelect'),
+        aK: document.getElementById('apiKeyInput'),
+        dot: document.getElementById('statusDot'),
+        mLabel: document.getElementById('currentModelLabel'),
+        mDrop: document.getElementById('modelDropdown'),
+        mSelectBtn: document.getElementById('modelSelector'),
+        fChip: document.getElementById('fileChip'),
+        fName: document.getElementById('fileName'),
+        fUpload: document.getElementById('fileUpload'),
+        sidebar: document.getElementById('sidebar'),
+        overlay: document.getElementById('sidebarOverlay')
+    };
 
-        let settings = JSON.parse(localStorage.getItem('aiminizer_mobile')) || {
-            apiKey: '',
-            baseUrl: '[isi endpoint]',
-            systemPrompt: 'Kamu adalah asisten efisien.',
-            darkMode: true
+    let client = null;
+    let messages = [];
+    let attachedFile = { name: '', content: '' };
+    let currentModelId = '';
+    let userScrolledUp = false;
+
+    // Smart scroll: deteksi kalau user scroll ke atas
+    const SCROLL_THRESHOLD = 80; // px dari bawah, masih dianggap "di bawah"
+    ui.chat.addEventListener('scroll', () => {
+        const distFromBottom = ui.chat.scrollHeight - ui.chat.scrollTop - ui.chat.clientHeight;
+        userScrolledUp = distFromBottom > SCROLL_THRESHOLD;
+        const btn = document.getElementById('scrollDownBtn');
+        if (userScrolledUp) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    });
+
+    window.scrollToBottom = (force = false) => {
+        userScrolledUp = false;
+        document.getElementById('scrollDownBtn').classList.remove('visible');
+        ui.chat.scrollTo({ top: ui.chat.scrollHeight, behavior: force ? 'smooth' : 'instant' });
+    };
+
+    function smartScroll() {
+        if (!userScrolledUp) {
+            ui.chat.scrollTop = ui.chat.scrollHeight;
+        }
+    }
+
+    window.setTheme = (t) => {
+        if (t === 'organic') {
+            document.documentElement.setAttribute('data-theme', 'organic');
+            document.getElementById('btnOrganic').classList.add('active');
+            document.getElementById('btnCyber').classList.remove('active');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            document.getElementById('btnCyber').classList.add('active');
+            document.getElementById('btnOrganic').classList.remove('active');
+        }
+        localStorage.setItem('aiminizer_theme', t);
+    };
+    setTheme(localStorage.getItem('aiminizer_theme') || 'cyber');
+
+    window.toggleSidebar = () => {
+        ui.sidebar.classList.toggle('active');
+        ui.overlay.classList.toggle('active');
+    };
+
+    ui.mSelectBtn.onclick = (e) => { e.stopPropagation(); ui.mDrop.classList.toggle('active'); };
+    document.addEventListener('click', (e) => { if(!ui.mDrop.contains(e.target) && e.target !== ui.mSelectBtn) ui.mDrop.classList.remove('active'); });
+
+    // Bug 1 Fix: marked.setOptions highlight sudah deprecated, pakai marked.use() dengan renderer
+    marked.use({
+        renderer: {
+            code(token) {
+                const lang = token.lang || '';
+                const code = token.text;
+                const highlighted = lang && hljs.getLanguage(lang)
+                    ? hljs.highlight(code, { language: lang, ignoreIllegals: true }).value
+                    : hljs.highlightAuto(code).value;
+                return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`;
+            }
+        }
+    });
+
+    async function initSystem() {
+        const providers = await loadProviders();
+        ui.pS.innerHTML = '';
+        Object.keys(providers).forEach(key => ui.pS.appendChild(new Option(key, key)));
+        if (providers["DeepInfra"]) ui.pS.value = "DeepInfra";
+        await updateClient();
+    }
+
+    async function updateClient() {
+        ui.dot.style.background = "#f1c40f";
+        ui.mLabel.innerText = "Memuat...";
+        const provider = ui.pS.value;
+        const apiKey = ui.aK.value.trim();
+        client = await createClient(provider, apiKey ? { apiKey } : {});
+        await loadModels();
+    }
+
+    async function loadModels() {
+        ui.mDrop.innerHTML = '<div class="drop-item"><strong>Fetching...</strong></div>';
+        try {
+            const models = await client.models.list();
+            ui.mDrop.innerHTML = '';
+
+            // Bug 5 (minor) Fix: filter longgar - kalau type null/undefined tetap lolos
+            const filtered = models.filter(m => !m.type || ["chat", "text"].includes(m.type));
+            const listToRender = filtered.length > 0 ? filtered : models;
+
+            // Bug 2 Fix: tentukan defaultModel dulu sebelum render item
+            const preferred = listToRender.find(m => m.id === client.defaultModel) || listToRender[0];
+            if (preferred) {
+                currentModelId = preferred.id;
+                ui.mLabel.innerText = preferred.id.split('/').pop().toUpperCase();
+            }
+
+            listToRender.forEach(m => {
+                const item = document.createElement('div');
+                // Bug 3 Fix: tandai item yang aktif saat dropdown di-render
+                item.className = 'drop-item' + (m.id === currentModelId ? ' active' : '');
+                item.innerHTML = `<strong>${m.id.split('/').pop()}</strong><span class="mono" style="font-size:0.65rem;">${m.id}</span>`;
+                item.onclick = () => {
+                    // Bug 3 Fix: update highlight saat user pilih model
+                    document.querySelectorAll('#modelDropdown .drop-item').forEach(el => el.classList.remove('active'));
+                    item.classList.add('active');
+                    currentModelId = m.id;
+                    ui.mLabel.innerText = m.id.split('/').pop().toUpperCase();
+                    ui.mDrop.classList.remove('active');
+                };
+                ui.mDrop.appendChild(item);
+            });
+
+            if (listToRender.length === 0) {
+                ui.mDrop.innerHTML = '<div class="drop-item"><strong>Tidak ada model tersedia</strong></div>';
+                ui.mLabel.innerText = "No Models";
+            }
+
+            ui.dot.style.background = "#2ecc71";
+        } catch (err) {
+            ui.mLabel.innerText = "Error";
+            ui.dot.style.background = "#e74c3c";
+        }
+    }
+
+    ui.pS.onchange = updateClient;
+    ui.aK.onchange = updateClient;
+
+    ui.fUpload.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            attachedFile = { name: file.name, content: event.target.result };
+            ui.fName.innerText = file.name;
+            ui.fChip.style.display = 'flex';
         };
+        reader.readAsText(file);
+        this.value = '';
+    });
 
-        function toggleSettings() {
-            const panel = document.getElementById('settingsPanel');
-            const content = document.getElementById('settingsContent');
-            const overlay = document.getElementById('overlay');
-            
-            if (panel.classList.contains('invisible')) {
-                panel.classList.remove('invisible');
+    window.clearFile = () => {
+        attachedFile = { name: '', content: '' };
+        ui.fChip.style.display = 'none';
+    };
+
+    function getCurrentTime() {
+        const now = new Date();
+        return now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    }
+
+    window.copyMessage = function(bubbleElement) {
+        const markdownBody = bubbleElement.querySelector('.markdown-body');
+        const textToCopy = markdownBody ? markdownBody.innerText : bubbleElement.innerText;
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const timeContainer = bubbleElement.nextElementSibling;
+            if (timeContainer && timeContainer.classList.contains('timestamp')) {
+                const originalTime = timeContainer.innerText;
+                timeContainer.innerText = "Tersalin!";
+                timeContainer.style.color = "#2ecc71";
                 setTimeout(() => {
-                    content.classList.remove('-translate-x-full');
-                    overlay.classList.add('opacity-100');
-                }, 10);
+                    timeContainer.innerText = originalTime;
+                    timeContainer.style.color = "var(--text-dim)";
+                }, 2000);
+            }
+        });
+    };
+
+    // Bug 4 Fix: helper untuk escape HTML agar input user tidak bisa inject script
+    function escapeHTML(str) {
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // ─── TYPEWRITER QUEUE ───────────────────────────────────────────────
+    // Chunk dari API masuk ke queue, lalu ditulis 1-2 char per 18ms
+    // Ini bikin efek smooth typewriter terlepas dari kecepatan network
+
+    function extractThink(rawText) {
+        const thinkRegex = /(<think>)([\s\S]*?)(<\/think>)/gi;
+        const hasClose = thinkRegex.test(rawText);
+        thinkRegex.lastIndex = 0;
+        const openIdx = rawText.search(/<think>/i);
+        const closeIdx = rawText.search(/<\/think>/i);
+        const inProgress = openIdx !== -1 && closeIdx === -1;
+        let thinkContent = '', mainContent = rawText;
+        if (hasClose || inProgress) {
+            if (inProgress) {
+                thinkContent = rawText.slice(openIdx + 7);
+                mainContent = rawText.slice(0, openIdx);
             } else {
-                content.classList.add('-translate-x-full');
-                overlay.classList.remove('opacity-100');
-                setTimeout(() => panel.classList.add('invisible'), 300);
+                mainContent = rawText.replace(thinkRegex, (_, _o, inner) => {
+                    thinkContent += inner; return '';
+                }).trim();
             }
         }
+        return { thinkContent, mainContent, inProgress };
+    }
 
-        function saveSettings() {
-            settings.apiKey = document.getElementById('apiKey').value;
-            settings.systemPrompt = document.getElementById('systemPrompt').value;
-            localStorage.setItem('aiminizer_mobile', JSON.stringify(settings));
-            toggleSettings();
+    function buildThinkHTML(thinkContent, inProgress, container) {
+        const isOpen = container.querySelector('.thinking-toggle.open') !== null;
+        const label = inProgress ? 'Sedang berpikir...' : 'Lihat pemikiran AI';
+        const spin = inProgress ? ` <i class="fas fa-circle-notch think-spinner" style="font-size:0.75rem;"></i>` : '';
+        return `<div class="thinking-block">
+            <button class="thinking-toggle${isOpen ? ' open' : ''}" onclick="event.stopPropagation(); this.classList.toggle('open'); const c=this.nextElementSibling; c.classList.toggle('open');">
+                <i class="fas fa-brain think-icon"></i>
+                <span>${label}${spin}</span>
+                <i class="fas fa-chevron-down think-chevron"></i>
+            </button>
+            <div class="thinking-content${isOpen ? ' open' : ''}">${escapeHTML(thinkContent)}</div>
+        </div>`;
+    }
+
+    function renderFinal(container, rawText) {
+        const { thinkContent, mainContent } = extractThink(rawText);
+        let html = '';
+        if (thinkContent) html += buildThinkHTML(thinkContent, false, container);
+        if (mainContent.trim()) html += `<div class="main-response">${marked.parse(mainContent)}</div>`;
+        container.innerHTML = html;
+        container.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+        if (typeof renderMathInElement !== 'undefined') {
+            renderMathInElement(container, {
+                delimiters: [
+                    { left: '$$', right: '$$', display: true },
+                    { left: '$',  right: '$',  display: false },
+                    { left: '\\(', right: '\\)', display: false },
+                    { left: '\\[', right: '\\]', display: true }
+                ],
+                throwOnError: false
+            });
         }
+    }
 
-        function toggleTheme() {
-            document.documentElement.classList.toggle('dark');
-            settings.darkMode = document.documentElement.classList.contains('dark');
-            localStorage.setItem('aiminizer_mobile', JSON.stringify(settings));
-        }
+    // Typewriter: queue teks, flush 2 char/18ms ke display
+    function createTypewriter(container) {
+        let displayed = '';
+        let queued    = '';
+        let timer     = null;
+        let done      = false;
+        let onDoneCb  = null;
+        let started   = false;
 
-        function appendMessage(role, content) {
-            const container = document.getElementById('chatContainer');
-            const div = document.createElement('div');
-            div.className = `max-w-[90%] p-4 rounded-[22px] text-[14px] leading-relaxed shadow-sm transition-all ${
-                role === 'user' ? 'bg-[var(--accent)] text-white self-end rounded-tr-none' : 'bg-[var(--ai-msg)] self-start rounded-tl-none border border-[var(--border)]'
-            }`;
-            
-            if (role === 'ai') {
-                const inner = document.createElement('div');
-                div.appendChild(inner);
-                container.appendChild(div);
-                typeWriter(inner, content);
-            } else {
-                div.innerText = content;
-                container.appendChild(div);
+        // Sub-container dibuat tapi belum di-append — append saat chunk pertama tiba
+        const thinkEl = document.createElement('div');
+        const mainEl  = document.createElement('div');
+
+        function updateThinkBlock(thinkContent, inProgress) {
+            // Kalau thinking block belum ada, buat skeleton-nya sekali
+            let block = thinkEl.querySelector('.thinking-block');
+            if (!block) {
+                block = document.createElement('div');
+                block.className = 'thinking-block';
+                block.innerHTML = `
+                    <button class="thinking-toggle" onclick="event.stopPropagation(); this.classList.toggle('open'); const c=this.nextElementSibling; c.classList.toggle('open');">
+                        <i class="fas fa-brain think-icon"></i>
+                        <span class="think-label">Sedang berpikir...</span>
+                        <i class="fas fa-loading-spin fas fa-circle-notch think-spinner" style="font-size:0.75rem; margin-left:4px;"></i>
+                        <i class="fas fa-chevron-down think-chevron"></i>
+                    </button>
+                    <div class="thinking-content"></div>`;
+                thinkEl.appendChild(block);
             }
-            container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+
+            // Update hanya teks label dan konten — JANGAN rebuild elemen
+            const labelEl   = block.querySelector('.think-label');
+            const spinnerEl = block.querySelector('.think-spinner');
+            const contentEl = block.querySelector('.thinking-content');
+
+            if (!inProgress) {
+                // Selesai mikir — ganti label, sembunyikan spinner
+                if (labelEl)   labelEl.textContent = 'Lihat pemikiran AI';
+                if (spinnerEl) spinnerEl.style.display = 'none';
+            } else {
+                if (labelEl)   labelEl.textContent = 'Sedang berpikir...';
+                if (spinnerEl) spinnerEl.style.display = '';
+            }
+            if (contentEl) contentEl.textContent = thinkContent;
         }
 
-        function typeWriter(element, text) {
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i < text.length) {
-                    element.innerHTML = marked.parse(text.substring(0, i + 1));
-                    i++;
-                    document.getElementById('chatContainer').scrollTop = document.getElementById('chatContainer').scrollHeight;
-                } else {
-                    clearInterval(interval);
-                    lucide.createIcons();
+        // Pre-buat typing dots sekali — jangan rebuild tiap tick biar animasi tidak reset
+        const dotsEl = document.createElement('div');
+        dotsEl.className = 'typing-indicator';
+        dotsEl.style.padding = '6px 0';
+        dotsEl.innerHTML = `<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>`;
+
+        function flush() {
+            if (!queued.length) {
+                timer = null;
+                if (done && onDoneCb) onDoneCb();
+                return;
+            }
+
+            const take = Math.min(2, queued.length);
+            displayed += queued.slice(0, take);
+            queued     = queued.slice(take);
+
+            const { thinkContent, mainContent, inProgress } = extractThink(displayed);
+
+            // Update thinking block tanpa rebuild (spinner aman)
+            if (thinkContent || inProgress) {
+                updateThinkBlock(thinkContent, inProgress);
+            } else {
+                thinkEl.innerHTML = '';
+            }
+
+            // Update main response
+            if (mainContent.trim()) {
+                // Ada jawaban — pastikan dots hilang
+                if (dotsEl.parentNode === mainEl) mainEl.removeChild(dotsEl);
+                const inCode = (mainContent.match(/```/g) || []).length % 2 !== 0;
+                let parsed = marked.parse(mainContent);
+                if (!inCode) {
+                    // Inject cursor di dalam tag penutup terakhir biar nempel di ujung teks
+                    parsed = parsed.replace(/(<\/(?:p|li|h[1-6])>)(\s*)$/, '<span class="tw-cursor">▋</span>$1$2');
                 }
-            }, 5);
+                mainEl.innerHTML = `<div class="main-response">${parsed}</div>`;
+                mainEl.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+            } else if (inProgress) {
+                // Masih mikir — tampilkan dots (append sekali, tidak rebuild)
+                if (dotsEl.parentNode !== mainEl) {
+                    mainEl.innerHTML = '';
+                    mainEl.appendChild(dotsEl);
+                }
+            } else {
+                if (dotsEl.parentNode === mainEl) mainEl.removeChild(dotsEl);
+                mainEl.innerHTML = '';
+            }
+
+            timer = setTimeout(flush, 18);
         }
 
-        async function sendMessage() {
-            const input = document.getElementById('userInput');
-            const text = input.value.trim();
-            if (!text || !settings.apiKey) return;
+        return {
+            push(text) {
+                // Chunk pertama: hapus waiting dots, append sub-container dengan urutan benar
+                if (!started) {
+                    started = true;
+                    container.innerHTML = '';       // hapus typing dots
+                    container.appendChild(thinkEl); // thinking dulu
+                    container.appendChild(mainEl);  // baru jawaban
+                }
+                queued += text;
+                if (!timer) timer = setTimeout(flush, 18);
+            },
+            finish(cb) {
+                done = true;
+                onDoneCb = cb;
+                if (!timer && !queued.length) cb();
+            },
+            abort() {
+                clearTimeout(timer);
+                timer = null;
+            },
+            getDisplayed() { return displayed + queued; } // total teks termasuk antrian
+        };
+    }
 
-            input.value = '';
-            input.style.height = 'auto';
-            appendMessage('user', text);
+
+    async function handleSend() {
+        const text = ui.input.value.trim();
+        if (!text && !attachedFile.content) return;
+        if (!client || !currentModelId) return;
+
+        let promptKirim = text;
+        if (attachedFile.content) {
+            promptKirim = `[Dokumen Terlampir: ${attachedFile.name}]\n\`\`\`\n${attachedFile.content}\n\`\`\`\n\nPesan Pengguna: ${text || 'Tolong analisis kode/teks di atas.'}`;
+        }
+
+        if (messages.length === 0) ui.chat.innerHTML = '';
+
+        const timeStr = getCurrentTime();
+        // Bug 5 Fix: simpan fileName sebelum clearFile() dipanggil
+        const displayFileName = attachedFile.name;
+
+        ui.chat.insertAdjacentHTML('beforeend', `
+            <div class="message user">
+                <div class="bubble" onclick="copyMessage(this)" title="Ketuk untuk salin">${escapeHTML(text) || 'Mengirim dokumen: ' + escapeHTML(displayFileName)}</div>
+                <div class="timestamp">${timeStr}</div>
+            </div>
+        `);
+            
+        messages.push({ role: 'user', content: promptKirim });
+        
+        ui.input.value = '';
+        ui.input.style.height = 'auto';
+        clearFile();
+        scrollToBottom();
+
+        const astTimeStr = getCurrentTime();
+        const assistantDiv = document.createElement('div');
+        assistantDiv.className = 'message assistant';
+        assistantDiv.innerHTML = `
+            <div class="bubble" onclick="copyMessage(this)" title="Ketuk untuk salin"><div class="markdown-body"><div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div></div>
+            <div class="timestamp">${astTimeStr}</div>
+        `;
+        ui.chat.appendChild(assistantDiv);
+        
+        const targetRender = assistantDiv.querySelector('.markdown-body');
+
+        ui.send.disabled = true;
+        ui.send.classList.add('loading');
+        ui.send.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="font-size:0.9rem;"></i>';
+        ui.dot.style.background = "#3498db";
+
+        const MAX_RETRIES = 2;
+        let attempt = 0;
+        let success = false;
+
+        while (attempt <= MAX_RETRIES && !success) {
+            attempt++;
+            // Reset container — kosongkan dulu, typing dots di-handle terpisah
+            targetRender.innerHTML = '';
+
+            // Tampilkan typing dots sebagai waiting state
+            const waitingDots = document.createElement('div');
+            waitingDots.className = 'typing-indicator';
+            waitingDots.innerHTML = attempt > 1
+                ? `<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span><span style="font-size:0.8rem;color:var(--text-dim);margin-left:6px;">Mencoba ulang (${attempt}/${MAX_RETRIES + 1})...</span>`
+                : `<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>`;
+            targetRender.appendChild(waitingDots);
 
             try {
-                const res = await fetch(`${settings.baseUrl}/chat/completions`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${settings.apiKey}` },
-                    body: JSON.stringify({
-                        model: document.getElementById('modelSelect').value,
-                        messages: [
-                            { role: 'system', content: `${ABSOLUTE_PROMPT}\n${settings.systemPrompt}` },
-                            { role: 'user', content: text }
-                        ]
-                    })
+                // Timeout: batalkan request kalau lebih dari 30 detik tidak ada chunk pertama
+                const abortCtrl = new AbortController();
+                let firstChunkTimer = setTimeout(() => abortCtrl.abort(), 30000);
+
+                const stream = await client.chat.completions.create({
+                    model: currentModelId,
+                    messages,
+                    stream: true,
+                    signal: abortCtrl.signal
                 });
-                const data = await res.json();
-                appendMessage('ai', data.choices[0].message.content);
-            } catch (e) {
-                appendMessage('ai', 'Gagal memproses. Cek koneksi.');
+
+                let fullText = '';
+                let lastChunkTime = Date.now();
+                const tw = createTypewriter(targetRender);
+
+                // Watchdog: kalau 20 detik tidak ada chunk baru, batalkan
+                const watchdog = setInterval(() => {
+                    if (Date.now() - lastChunkTime > 20000) {
+                        clearInterval(watchdog);
+                        abortCtrl.abort();
+                    }
+                }, 2000);
+
+                for await (const chunk of stream) {
+                    clearTimeout(firstChunkTimer);
+                    lastChunkTime = Date.now();
+                    const delta = chunk.choices[0]?.delta?.content || '';
+                    fullText += delta;
+                    tw.push(delta);   // masuk queue, typewriter yg urus sisanya
+                    smartScroll();
+                }
+
+                clearInterval(watchdog);
+
+                // Kalau stream selesai tapi kosong, anggap gagal dan retry
+                if (!fullText.trim()) {
+                    tw.abort();
+                    if (attempt <= MAX_RETRIES) {
+                        await new Promise(r => setTimeout(r, 1500));
+                        continue;
+                    } else {
+                        targetRender.innerHTML = `<span style="color: var(--text-dim)"><i class="fas fa-exclamation-circle"></i> AI tidak memberikan respons. Coba ganti model atau kirim ulang pesan.</span>`;
+                        ui.dot.style.background = "#e67e22";
+                        break;
+                    }
+                }
+
+                // Tunggu typewriter habis flush semua antrian, baru render final
+                await new Promise(resolve => tw.finish(resolve));
+                renderFinal(targetRender, fullText);
+                const cleanForHistory = fullText.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+                messages.push({ role: 'assistant', content: cleanForHistory });
+                ui.dot.style.background = "#2ecc71";
+                success = true;
+
+            } catch (err) {
+                const isAbort = err.name === 'AbortError';
+                if (!isAbort || attempt > MAX_RETRIES) {
+                    const msg = isAbort
+                        ? 'Timeout: AI tidak merespon. Coba ganti model.'
+                        : `Koneksi Error: ${err.message}`;
+                    targetRender.innerHTML = `<span style="color: #e74c3c"><i class="fas fa-wifi"></i> ${msg}</span>`;
+                    ui.dot.style.background = "#e74c3c";
+                    break;
+                }
+                // Kalau abort tapi masih ada sisa retry, lanjut loop
+                await new Promise(r => setTimeout(r, 1500));
             }
         }
-    </script>
+
+        ui.send.disabled = false;
+        ui.send.classList.remove('loading');
+        ui.send.innerHTML = '<i class="fas fa-arrow-up"></i>';
+        ui.dot.style.background = success ? "#2ecc71" : ui.dot.style.background;
+    }
+
+    ui.send.onclick = handleSend;
+    ui.input.onkeydown = (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
+    ui.input.oninput = function() { this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'; };
+
+    initSystem();
+</script>
 </body>
 </html>
