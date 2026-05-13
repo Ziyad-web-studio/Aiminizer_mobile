@@ -891,5 +891,44 @@
 
     initSystem();
 </script>
+<!-- Watermark --><div id="ziyad-watermark">
+    built by ziyad-web-studio
+</div><style>
+#ziyad-watermark{
+    position: fixed;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    right: 16px;
+
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    color: rgba(255,255,255,0.18);
+
+    z-index: 9999;
+    pointer-events: none;
+    user-select: none;
+
+    transition: opacity 0.3s ease;
+    mix-blend-mode: soft-light;
+
+    opacity: 0.9;
+}
+
+/* Tema Organic */
+[data-theme="organic"] #ziyad-watermark{
+    color: rgba(32,15,7,0.22);
+}
+
+/* Mobile */
+@media (max-width: 768px){
+    #ziyad-watermark{
+        font-size: 0.58rem;
+        right: 12px;
+        bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+}
+</style>
 </body>
 </html>
