@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Ziyad Studio | Aiminizer Pro</title>
+    <title>Ziyad Studio | OpenRouter Chat AI</title>
     
     <link rel="apple-touch-icon" sizes="180x180" href="asset/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="asset/favicon-32x32.png">
@@ -302,12 +302,19 @@
                 </div>
             </div>
             <div class="config-item">
-                <label>Penyedia (Provider)</label>
-                <select id="providerSelect"><option disabled selected>Loading...</option></select>
+                <label>Kunci API OpenRouter</label>
+                <input type="password" id="apiKeyInput" placeholder="Masukkan API Key OpenRouter kamu..." style="font-family: 'Space Mono', monospace;">
             </div>
             <div class="config-item">
-                <label>Kunci API (Opsional)</label>
-                <input type="password" id="apiKeyInput" placeholder="Ketik jika ada...">
+                <label>Filter Model</label>
+                <input type="text" id="modelSearchInput" placeholder="Cari model... (misal: free, gpt, llama)" style="font-family: 'Space Mono', monospace;">
+            </div>
+            <div class="config-item">
+                <label>Tipe Model</label>
+                <div class="theme-btns">
+                    <button class="theme-btn active" id="btnAllModels" onclick="filterModels('all')">Semua</button>
+                    <button class="theme-btn" id="btnFreeModels" onclick="filterModels('free')">Gratis</button>
+                </div>
             </div>
         </div>
     </div>
@@ -356,17 +363,15 @@
     </div>
 </div>
 
-<script src="https://g4f.dev/dist/js/framework.js"></script>
 <script type="module">
-    import { loadProviders, createClient } from "https://g4f.dev/dist/js/providers.js";
     import { animate, scrambleText } from "https://esm.sh/animejs@4";
 
     const ui = {
         chat: document.getElementById('chatContainer'),
         input: document.getElementById('chatInput'),
         send: document.getElementById('sendBtn'),
-        pS: document.getElementById('providerSelect'),
         aK: document.getElementById('apiKeyInput'),
+        modelSearch: document.getElementById('modelSearchInput'),
         dot: document.getElementById('statusDot'),
         mLabel: document.getElementById('currentModelLabel'),
         mDrop: document.getElementById('modelDropdown'),
@@ -378,7 +383,11 @@
         overlay: document.getElementById('sidebarOverlay')
     };
 
-    let client = null;
+    let openrouterApiKey = '';
+    let allModels = [];
+    let filteredModels = [];
+    let currentModelFilter = 'all';
+    let currentSearchQuery = '';
     let messages = [];
     let attachedFile = { name: '', content: '' };
     let currentModelId = '';
@@ -445,77 +454,141 @@
         }
     });
 
-    async function initSystem() {
-        const providers = await loadProviders();
-        ui.pS.innerHTML = '';
-        Object.keys(providers).forEach(key => ui.pS.appendChild(new Option(key, key)));
-        if (providers["DeepInfra"]) ui.pS.value = "DeepInfra";
-        await updateClient();
-    }
-
-    async function updateClient() {
-        ui.dot.style.background = "#f1c40f";
-        ui.mLabel.innerText = "Memuat...";
-        const provider = ui.pS.value;
-        const apiKey = ui.aK.value.trim();
-        client = await createClient(provider, apiKey ? { apiKey } : {});
-        await loadModels();
-    }
-
-    let availableModels = []; // list semua model untuk auto-fallback
-
-    async function loadModels() {
-        ui.mDrop.innerHTML = '<div class="drop-item"><strong>Fetching...</strong></div>';
+    // Fetch models dari OpenRouter API
+    async function fetchOpenRouterModels() {
+        ui.mDrop.innerHTML = '<div class="drop-item"><strong>Fetching model dari OpenRouter...</strong></div>';
         try {
-            const models = await client.models.list();
-            ui.mDrop.innerHTML = '';
-
-            const filtered = models.filter(m => !m.type || ["chat", "text"].includes(m.type));
-            availableModels = filtered.length > 0 ? filtered : models;
-
-            const preferred = availableModels.find(m => m.id === client.defaultModel) || availableModels[0];
-            if (preferred) {
-                currentModelId = preferred.id;
-                ui.mLabel.innerText = preferred.id.split('/').pop().toUpperCase();
-            }
-
-            availableModels.forEach(m => {
-                const item = document.createElement('div');
-                item.className = 'drop-item' + (m.id === currentModelId ? ' active' : '');
-                item.innerHTML = `<strong>${m.id.split('/').pop()}</strong><span class="mono" style="font-size:0.65rem;">${m.id}</span>`;
-                item.onclick = () => {
-                    document.querySelectorAll('#modelDropdown .drop-item').forEach(el => el.classList.remove('active'));
-                    item.classList.add('active');
-                    currentModelId = m.id;
-                    ui.mLabel.innerText = m.id.split('/').pop().toUpperCase();
-                    ui.mDrop.classList.remove('active');
-                };
-                ui.mDrop.appendChild(item);
+            const response = await fetch('https://openrouter.ai/api/v1/models', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${openrouterApiKey}`,
+                    'Content-Type': 'application/json'
+                }
             });
-
-            if (availableModels.length === 0) {
-                ui.mDrop.innerHTML = '<div class="drop-item"><strong>Tidak ada model tersedia</strong></div>';
-                ui.mLabel.innerText = "No Models";
-            }
-
+            
+            if (!response.ok) throw new Error('Gagal fetch models');
+            const data = await response.json();
+            allModels = data.data || [];
+            applyFiltersAndRenderModels();
             ui.dot.style.background = "#2ecc71";
         } catch (err) {
-            ui.mLabel.innerText = "Error";
+            console.error(err);
+            ui.mLabel.innerText = "API Key Required";
             ui.dot.style.background = "#e74c3c";
+            ui.mDrop.innerHTML = '<div class="drop-item"><strong>Masukkan API Key OpenRouter dulu!</strong></div>';
         }
     }
 
+    // Terapkan filter dan search lalu render models
+    function applyFiltersAndRenderModels() {
+        filteredModels = allModels.filter(model => {
+            // Filter free
+            if (currentModelFilter === 'free') {
+                const isFree = model.pricing?.prompt === '0' && model.pricing?.completion === '0';
+                if (!isFree) return false;
+            }
+            // Search query
+            if (currentSearchQuery) {
+                const query = currentSearchQuery.toLowerCase();
+                const matches = model.id.toLowerCase().includes(query) || 
+                               model.name?.toLowerCase().includes(query);
+                if (!matches) return false;
+            }
+            return true;
+        });
+
+        renderModelsList();
+    }
+
+    // Render dropdown models
+    function renderModelsList() {
+        ui.mDrop.innerHTML = '';
+        
+        if (filteredModels.length === 0) {
+            ui.mDrop.innerHTML = '<div class="drop-item"><strong>Tidak ada model cocok</strong></div>';
+            ui.mLabel.innerText = "No Models";
+            return;
+        }
+
+        // Set default model jika belum ada
+        if (!currentModelId || !filteredModels.find(m => m.id === currentModelId)) {
+            currentModelId = filteredModels[0].id;
+            ui.mLabel.innerText = filteredModels[0].name || filteredModels[0].id.split('/').pop();
+        }
+
+        filteredModels.forEach(m => {
+            const isFree = m.pricing?.prompt === '0' && m.pricing?.completion === '0';
+            const item = document.createElement('div');
+            item.className = 'drop-item' + (m.id === currentModelId ? ' active' : '');
+            item.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong>${m.name || m.id.split('/').pop()}</strong>
+                    ${isFree ? '<span style="background: #2ecc71; color: #000; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">FREE</span>' : ''}
+                </div>
+                <span class="mono" style="font-size:0.65rem; margin-top: 4px;">${m.id}</span>
+                ${m.context_window ? `<span class="mono" style="font-size:0.6rem; color: var(--text-dim);">Context: ${(m.context_window/1000).toFixed(0)}k</span>` : ''}
+            `;
+            item.onclick = () => {
+                document.querySelectorAll('#modelDropdown .drop-item').forEach(el => el.classList.remove('active'));
+                item.classList.add('active');
+                currentModelId = m.id;
+                ui.mLabel.innerText = m.name || m.id.split('/').pop();
+                ui.mDrop.classList.remove('active');
+            };
+            ui.mDrop.appendChild(item);
+        });
+    }
+
+    // Inisialisasi sistem
+    async function initSystem() {
+        // Cek localStorage untuk API key yang disimpan
+        const savedApiKey = localStorage.getItem('openrouter_api_key');
+        if (savedApiKey) {
+            ui.aK.value = savedApiKey;
+            openrouterApiKey = savedApiKey;
+            await fetchOpenRouterModels();
+        } else {
+            ui.mDrop.innerHTML = '<div class="drop-item"><strong>Masukkan API Key OpenRouter kamu!</strong></div>';
+            ui.mLabel.innerText = "Wait API Key";
+            ui.dot.style.background = "#f1c40f";
+        }
+
+        // Event listener untuk API key input
+        ui.aK.addEventListener('change', async () => {
+            openrouterApiKey = ui.aK.value.trim();
+            if (openrouterApiKey) {
+                localStorage.setItem('openrouter_api_key', openrouterApiKey);
+                await fetchOpenRouterModels();
+            }
+        });
+
+        // Event listener untuk search
+        ui.modelSearch.addEventListener('input', () => {
+            currentSearchQuery = ui.modelSearch.value.trim();
+            applyFiltersAndRenderModels();
+        });
+    }
+
+    // Window function untuk filter models
+    window.filterModels = (filter) => {
+        currentModelFilter = filter;
+        // Update button states
+        document.getElementById('btnAllModels').classList.toggle('active', filter === 'all');
+        document.getElementById('btnFreeModels').classList.toggle('active', filter === 'free');
+        applyFiltersAndRenderModels();
+    };
+
     // Auto-fallback: pindah ke model berikutnya di list kalau model aktif gagal
     function switchToNextModel(failedModelId) {
-        const currentIdx = availableModels.findIndex(m => m.id === failedModelId);
-        if (currentIdx === -1 || availableModels.length <= 1) return null;
+        const currentIdx = filteredModels.findIndex(m => m.id === failedModelId);
+        if (currentIdx === -1 || filteredModels.length <= 1) return null;
 
         // Cari model berikutnya (loop balik ke awal kalau sudah di akhir)
-        const nextIdx = (currentIdx + 1) % availableModels.length;
-        const nextModel = availableModels[nextIdx];
+        const nextIdx = (currentIdx + 1) % filteredModels.length;
+        const nextModel = filteredModels[nextIdx];
 
         currentModelId = nextModel.id;
-        ui.mLabel.innerText = nextModel.id.split('/').pop().toUpperCase();
+        ui.mLabel.innerText = nextModel.name || nextModel.id.split('/').pop();
 
         // Update highlight di dropdown
         document.querySelectorAll('#modelDropdown .drop-item').forEach((el, i) => {
@@ -524,7 +597,6 @@
 
         return nextModel.id;
     }
-    ui.aK.onchange = updateClient;
 
     ui.fUpload.addEventListener('change', function(e) {
         const file = e.target.files[0];
@@ -764,7 +836,10 @@
     async function handleSend() {
         const text = ui.input.value.trim();
         if (!text && !attachedFile.content) return;
-        if (!client || !currentModelId) return;
+        if (!openrouterApiKey || !currentModelId) {
+            alert('Masukkan API Key OpenRouter dan pilih model dulu!');
+            return;
+        }
 
         let promptKirim = text;
         if (attachedFile.content) {
@@ -774,7 +849,6 @@
         if (messages.length === 0) ui.chat.innerHTML = '';
 
         const timeStr = getCurrentTime();
-        // Bug 5 Fix: simpan fileName sebelum clearFile() dipanggil
         const displayFileName = attachedFile.name;
 
         ui.chat.insertAdjacentHTML('beforeend', `
@@ -807,7 +881,7 @@
         ui.send.innerHTML = '<i class="fas fa-circle-notch fa-spin" style="font-size:0.9rem;"></i>';
         ui.dot.style.background = "#3498db";
 
-        const MAX_RETRIES = availableModels.length > 1 ? Math.min(availableModels.length - 1, 3) : 2;
+        const MAX_RETRIES = filteredModels.length > 1 ? Math.min(filteredModels.length - 1, 3) : 2;
         let attempt = 0;
         let success = false;
         let triedModels = new Set();
@@ -830,13 +904,27 @@
                 const abortCtrl = new AbortController();
                 let firstChunkTimer = setTimeout(() => abortCtrl.abort(), 30000);
 
-                const stream = await client.chat.completions.create({
-                    model: currentModelId,
-                    messages,
-                    stream: true,
+                // OpenRouter API request dengan streaming
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${openrouterApiKey}`,
+                        'Content-Type': 'application/json',
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'Aiminizer Pro'
+                    },
+                    body: JSON.stringify({
+                        model: currentModelId,
+                        messages: messages,
+                        stream: true
+                    }),
                     signal: abortCtrl.signal
                 });
 
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
                 let fullText = '';
                 let lastChunkTime = Date.now();
                 const tw = createTypewriter(targetRender);
@@ -849,13 +937,30 @@
                     }
                 }, 2000);
 
-                for await (const chunk of stream) {
+                // Process streaming response
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    
                     clearTimeout(firstChunkTimer);
                     lastChunkTime = Date.now();
-                    const delta = chunk.choices[0]?.delta?.content || '';
-                    fullText += delta;
-                    tw.push(delta);   // masuk queue, typewriter yg urus sisanya
-                    smartScroll();
+                    
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n').filter(line => line.startsWith('data: '));
+                    
+                    for (const line of lines) {
+                        try {
+                            const json = JSON.parse(line.replace('data: ', ''));
+                            if (json.choices && json.choices[0]?.delta?.content) {
+                                const delta = json.choices[0].delta.content;
+                                fullText += delta;
+                                tw.push(delta);
+                                smartScroll();
+                            }
+                        } catch (e) {
+                            // Skip invalid JSON lines (often the [DONE] message)
+                        }
+                    }
                 }
 
                 clearInterval(watchdog);
