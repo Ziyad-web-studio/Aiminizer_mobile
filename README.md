@@ -1,41 +1,116 @@
-# Aiminizer Mobile
+# 🤖 Aiminizer Pro
+**by Ziyad Web Studio**
 
-Antarmuka obrolan AI minimalis dengan estetika tinggi. Dikembangkan oleh **ziyad_studio** dengan filosofi *Designing Silence*.
-
-## ⚡ Unduh Cepat
-
-Dapatkan file aplikasi langsung untuk dijalankan di perangkat Anda:
-
-[![Lihat & Unduh HTML](https://img.shields.io/badge/Buka_File-Aiminizer_HTML-FF5F1F?style=for-the-badge&logo=html5&logoColor=white)](https://raw.githubusercontent.com/Ziyad-web-studio/Aiminizer_mobile/refs/heads/main/index.html)
-
-**Cara menyimpan:**
-1. Klik tombol di atas.
-2. Setelah halaman kode terbuka, tekan **Ctrl + S** (Windows) atau **Cmd + S** (Mac).
-3. Jika menggunakan ponsel, buka menu peramban lalu pilih **Bagikan > Simpan ke File** atau **Unduh Halaman**.
+Aplikasi chat AI berbasis web yang ringan, mobile-first, dan berjalan langsung di browser tanpa instalasi. Didukung oleh [g4f (GPT4Free)](https://g4f.dev) dengan dukungan banyak provider dan model secara gratis.
 
 ---
 
-## 💎 Fitur Utama
+## ✨ Fitur
 
-* **Apple-Style UI:** Menggunakan efek kaca dan palet warna gelap yang elegan.
-* **Mobile First:** Dioptimalkan sepenuhnya untuk penggunaan satu tangan di perangkat seluler.
-* **Zero Backend:** Berjalan sepenuhnya di sisi klien menggunakan `localStorage` untuk keamanan data.
-* **Dynamic AI Support:** Siap dikonfigurasi untuk berbagai provider API.
+- 💬 **Chat AI real-time** dengan streaming typewriter per karakter
+- 🧠 **Thinking block** — pemikiran AI tersembunyi, bisa dibuka/tutup
+- 🔄 **Auto model fallback** — otomatis pindah ke model lain kalau model aktif error atau timeout
+- 🎨 **Dual tema** — Cyber Technic (gelap) & Organic Refresh (terang)
+- 📐 **Render Markdown & LaTeX** — bold, heading, list, kode, hingga rumus matematika
+- 🔢 **Syntax highlighting** — blok kode otomatis ter-highlight sesuai bahasa
+- 📎 **Upload dokumen** — lampirkan file teks/kode untuk dianalisis AI
+- 📋 **Salin pesan** — ketuk bubble untuk salin teks
+- 🔍 **Smart scroll** — bebas scroll ke atas saat AI ngetik, tombol "Lompat ke bawah" muncul otomatis
+- ⏱️ **Timeout & retry** — deteksi koneksi lambat, retry otomatis sebelum menyerah
+- 📱 **Mobile-first** — dioptimalkan untuk layar HP
 
-## 🛠 Panduan Modifikasi API (via AI)
+---
 
-Gunakan prompt berikut jika Anda ingin meminta asisten AI mengubah penyedia API tanpa merusak desain:
+## 📁 Struktur Folder
 
-### Prompt Eksekusi
+```
+Aiminizer_mobile/
+├── simple.html        # File utama aplikasi
+└── asset/
+    ├── favicon.ico
+    ├── favicon-16x16.png
+    ├── favicon-32x32.png
+    ├── apple-touch-icon.png
+    ├── android-chrome-192x192.png
+    ├── android-chrome-512x512.png
+    ├── site.webmanifest
+    └── favicon_io.zip
+```
 
-```text
-Tolong modifikasi logika API pada kode HTML ini. Ubah integrasi dari sistem saat ini menjadi integrasi untuk [masukkan provider api key].
+---
 
-Instruksi wajib:
-1. Pertahankan seluruh desain visual. Jangan ubah kelas Tailwind, efek kaca, mode gelap, atau tata letak elemen sama sekali. Estetika harus tetap sama persis.
-2. Ganti URL endpoint pada variabel baseUrl dan fungsi sendMessage() sesuai dengan dokumentasi resmi [masukkan provider api key].
-3. Sesuaikan format request (payload) dan cara membaca respons JSON agar valid dengan format [masukkan provider api key].
-4. Pastikan sistem penyimpanan API Key di pengaturan tetap berfungsi normal dengan localStorage.
+## 🚀 Cara Pakai
 
-Berikut kodenya:
-[Tempel kode HTML Aiminizer di sini]
+1. Clone atau download repo ini
+2. Buka `simple.html` langsung di browser, **atau** jalankan lewat local server:
+
+```bash
+# Pakai Python
+python -m http.server 7700
+
+# Pakai Node.js (npx)
+npx serve . -p 7700
+```
+
+3. Buka browser ke `http://localhost:7700/simple.html`
+4. Pilih **Provider** dan **Model** dari dropdown
+5. Mulai chat!
+
+> **Catatan:** Beberapa provider butuh API key. Isi di field API Key jika diperlukan.
+
+---
+
+## 🎨 Tema
+
+| Tema | Deskripsi |
+|------|-----------|
+| **Organic** *(default)* | Latar krem hangat, aksen hijau alami |
+| **Cyber** | Latar gelap, aksen biru neon |
+
+Preferensi tema tersimpan otomatis di `localStorage`.
+
+---
+
+## 🧠 Cara Kerja Thinking Block
+
+Beberapa model AI (seperti Qwen, DeepSeek-R1) mengirim proses berpikirnya dalam tag `<think>...</think>`. Aiminizer otomatis:
+- Menyembunyikan konten thinking di dalam collapsible block
+- Menampilkan spinner selama AI masih berpikir
+- Memisahkan teks pemikiran dari jawaban utama
+
+---
+
+## 🔄 Auto Model Fallback
+
+Kalau model yang aktif gagal merespon (timeout / respons kosong):
+1. Aiminizer otomatis pindah ke model berikutnya di list
+2. Muncul notifikasi di bubble: *"Model X timeout, beralih ke Model Y..."*
+3. Retry otomatis — dropdown dan label header ikut terupdate
+4. Kalau semua model habis dicoba → muncul pesan error
+
+---
+
+## 🛠️ Teknologi
+
+| Library | Fungsi |
+|---------|--------|
+| [g4f JS](https://g4f.dev) | Provider & model AI gratis |
+| [marked.js](https://marked.js.org) | Render Markdown |
+| [highlight.js](https://highlightjs.org) | Syntax highlighting kode |
+| [KaTeX](https://katex.org) | Render LaTeX / rumus matematika |
+| [Font Awesome](https://fontawesome.com) | Ikon UI |
+| [anime.js v4](https://animejs.com) | Animasi (import via ESM) |
+
+Semua library di-load via CDN — tidak perlu `npm install` apapun.
+
+---
+
+## 📄 Lisensi
+
+MIT License — bebas digunakan, dimodifikasi, dan didistribusikan.
+
+---
+
+<div align="center">
+  Made with ☕ by <strong>Ziyad Web Studio</strong>
+</div>
