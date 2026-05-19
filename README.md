@@ -1,116 +1,120 @@
-# 🤖 Aiminizer Pro
-**by Ziyad Web Studio**
+![Aiminizer Pro Logo](asset/android-chrome-512x512.png)
 
-Aplikasi chat AI berbasis web yang ringan, mobile-first, dan berjalan langsung di browser tanpa instalasi. Didukung oleh [g4f (GPT4Free)](https://g4f.dev) dengan dukungan banyak provider dan model secara gratis.
+# 🚀 Aiminizer Pro
+### *The Ultimate Organic-Logic Chat Interface*
 
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](https://en.wikipedia.org/wiki/HTML5)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](https://en.wikipedia.org/wiki/CSS)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![AI Powered](https://img.shields.io/badge/AI-Powered-C5E384?style=flat&logo=openai&logoColor=black)](https://g4f.dev)
 
-## ✨ Fitur
+**Aiminizer Pro** adalah antarmuka chat AI yang menenangkan dengan estetika "Organic Refresh" yang fokus pada kejelasan dan kenyamanan mata. Dirancang untuk kecepatan, keamanan, dan pengalaman pengguna yang natural.
 
-- 💬 **Chat AI real-time** dengan streaming typewriter per karakter
-- 🧠 **Thinking block** — pemikiran AI tersembunyi, bisa dibuka/tutup
-- 🔄 **Auto model fallback** — otomatis pindah ke model lain kalau model aktif error atau timeout
-- 🎨 **Dual tema** — Cyber Technic (gelap) & Organic Refresh (terang)
-- 📐 **Render Markdown & LaTeX** — bold, heading, list, kode, hingga rumus matematika
-- 🔢 **Syntax highlighting** — blok kode otomatis ter-highlight sesuai bahasa
-- 📎 **Upload dokumen** — lampirkan file teks/kode untuk dianalisis AI
-- 📋 **Salin pesan** — ketuk bubble untuk salin teks
-- 🔍 **Smart scroll** — bebas scroll ke atas saat AI ngetik, tombol "Lompat ke bawah" muncul otomatis
-- ⏱️ **Timeout & retry** — deteksi koneksi lambat, retry otomatis sebelum menyerah
-- 📱 **Mobile-first** — dioptimalkan untuk layar HP
+[Pelajari Fitur](#-fitur-unggulan) • [Cara Instalasi](#-memulai-pengembangan) • [Kontribusi](#-kontribusi)
 
 ---
 
-## 📁 Struktur Folder
+## 📸 Preview
 
+![Aiminizer Pro Screenshot](asset/screenshot-1.png)
+
+*Antarmuka chat AI yang responsif dengan desain organik yang bersih.*
+
+---
+
+## ✨ Fitur Unggulan
+
+- 🤖 **Multi-Model Intelligence:** Akses instan ke berbagai model AI tercanggih.
+- 🔄 **Smart Auto-Fallback:** Jangan biarkan chat terputus; sistem otomatis mencari model cadangan jika terjadi kegagalan.
+- 🧠 **Thinking Visualization:** Lihat proses "berpikir" AI secara real-time dengan blok pemikiran transparan.
+- ⌨️ **Smooth Typewriter:** Efek pengetikan yang mengalir mulus, seakan Anda berbicara dengan entitas hidup.
+- 📂 **Context Aware:** Unggah berkas kode atau teks untuk memberikan konteks mendalam bagi AI.
+- 🔒 **Privacy First:** Data Anda adalah milik Anda. Semua riwayat chat disimpan di memori lokal peramban Anda.
+- 📐 **Math & Code Ready:** Dukungan penuh untuk LaTeX (matematika) dan penyorotan sintaks kode untuk developer.
+
+---
+
+## 🛠️ Tech Stack
+
+| Komponen | Teknologi |
+| :--- | :--- |
+| **Logic** | Vanilla JavaScript (ES6+) |
+| **Styling** | Modern CSS3 (Organic Design) |
+| **Markdown** | [marked.js](https://marked.js.org/) |
+| **Syntax** | [highlight.js](https://highlightjs.org/) |
+| **Math** | [KaTeX](https://katex.org/) |
+| **Animation** | [Anime.js](https://animejs.com/) |
+| **Backend** | [g4f.dev](https://g4f.dev/) (Edge AI Providers) |
+
+---
+
+## 🚀 Memulai Pengembangan
+
+### Persyaratan
+- Peramban web modern (Chrome, Safari, Firefox).
+- Koneksi internet (untuk memuat library via CDN).
+
+### Langkah-langkah
+1. **Klon Repositori**
+   ```bash
+   git clone https://github.com/user/aiminizer-mobile.git
+   cd aiminizer-mobile
+   ```
+2. **Jalankan Lokal**
+   Gunakan server statis favorit Anda untuk pengalaman terbaik:
+   ```bash
+   # Python 3
+   python3 -m http.server 8000
+   
+   # Node.js
+   npx serve .
+   ```
+3. **Buka di Browser**
+   Akses `http://localhost:8000` dan mulai berinteraksi dengan AI!
+
+---
+
+## 🏗️ Arsitektur Proyek
+
+Struktur berkas yang bersih dan modular untuk memudahkan kustomisasi:
+
+```text
+📦 Aiminizer_mobile
+ ┣ 📂 css
+ ┃ ┗ 📜 styles.css    # Master stylesheet (Organic Theme)
+ ┣ 📂 js
+ ┃ ┗ 📜 app.js        # Core logic & AI integration
+ ┣ 📂 asset
+ ┃ ┣ 📜 logo.png      # Brand assets
+ ┃ ┗ 📜 manifest.json # PWA configuration
+ ┣ 📜 index.html      # Main app entry point
+ ┗ 📜 README.md       # Ultimate documentation
 ```
-Aiminizer_mobile/
-├── simple.html        # File utama aplikasi
-└── asset/
-    ├── favicon.ico
-    ├── favicon-16x16.png
-    ├── favicon-32x32.png
-    ├── apple-touch-icon.png
-    ├── android-chrome-192x192.png
-    ├── android-chrome-512x512.png
-    ├── site.webmanifest
-    └── favicon_io.zip
-```
 
 ---
 
-## 🚀 Cara Pakai
+## 💾 Penyimpanan Data
 
-1. Clone atau download repo ini
-2. Buka `simple.html` langsung di browser, **atau** jalankan lewat local server:
+Aplikasi ini menggunakan **LocalStorage** peramban untuk menjaga privasi tetap di tangan pengguna:
 
-```bash
-# Pakai Python
-python -m http.server 7700
-
-# Pakai Node.js (npx)
-npx serve . -p 7700
-```
-
-3. Buka browser ke `http://localhost:7700/simple.html`
-4. Pilih **Provider** dan **Model** dari dropdown
-5. Mulai chat!
-
-> **Catatan:** Beberapa provider butuh API key. Isi di field API Key jika diperlukan.
+- `aiminizer_history`: Menyimpan struktur percakapan.
+- `aiminizer_theme`: Menyimpan preferensi visual (Default: Organic).
+- `aiminizer_cookies_accepted`: Status izin privasi.
 
 ---
 
-## 🎨 Tema
+## 🤝 Kontribusi
 
-| Tema | Deskripsi |
-|------|-----------|
-| **Organic** *(default)* | Latar krem hangat, aksen hijau alami |
-| **Cyber** | Latar gelap, aksen biru neon |
-
-Preferensi tema tersimpan otomatis di `localStorage`.
-
----
-
-## 🧠 Cara Kerja Thinking Block
-
-Beberapa model AI (seperti Qwen, DeepSeek-R1) mengirim proses berpikirnya dalam tag `<think>...</think>`. Aiminizer otomatis:
-- Menyembunyikan konten thinking di dalam collapsible block
-- Menampilkan spinner selama AI masih berpikir
-- Memisahkan teks pemikiran dari jawaban utama
+Kami menyukai kolaborasi! Jika Anda memiliki ide cemerlang:
+1. Fork proyek ini.
+2. Buat cabang fitur baru (`git checkout -b fitur/Keren`).
+3. Komit perubahan Anda (`git commit -m 'Menambah sesuatu yang keren'`).
+4. Push ke cabang tersebut (`git push origin fitur/Keren`).
+5. Buka Pull Request.
 
 ---
 
-## 🔄 Auto Model Fallback
+Made with ⚡ by **Ziyad Studio**
 
-Kalau model yang aktif gagal merespon (timeout / respons kosong):
-1. Aiminizer otomatis pindah ke model berikutnya di list
-2. Muncul notifikasi di bubble: *"Model X timeout, beralih ke Model Y..."*
-3. Retry otomatis — dropdown dan label header ikut terupdate
-4. Kalau semua model habis dicoba → muncul pesan error
-
----
-
-## 🛠️ Teknologi
-
-| Library | Fungsi |
-|---------|--------|
-| [g4f JS](https://g4f.dev) | Provider & model AI gratis |
-| [marked.js](https://marked.js.org) | Render Markdown |
-| [highlight.js](https://highlightjs.org) | Syntax highlighting kode |
-| [KaTeX](https://katex.org) | Render LaTeX / rumus matematika |
-| [Font Awesome](https://fontawesome.com) | Ikon UI |
-| [anime.js v4](https://animejs.com) | Animasi (import via ESM) |
-
-Semua library di-load via CDN — tidak perlu `npm install` apapun.
-
----
-
-## 📄 Lisensi
-
-MIT License — bebas digunakan, dimodifikasi, dan didistribusikan.
-
----
-
-<div align="center">
-  Made with ☕ by <strong>Ziyad Web Studio</strong>
-</div>
+[![Follow on GitHub](https://img.shields.io/github/followers/ziyad-studio?label=Follow&style=social)](https://github.com/ziyad-studio)
